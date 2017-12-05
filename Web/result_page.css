@@ -1,0 +1,62 @@
+@charset "UTF-8";
+body
+{
+	font-family: '경기천년제목L Light', NanumSquare, Arial, Dotum, '돋움', Helvetica;
+}
+.area_search
+{
+	position: sticky;
+	top:0;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: auto;
+	background-color: rgba(0,0,0,0.4);
+}
+.search_form
+{
+	width: 280px;
+	margin: 20px auto;
+	opacity: initial;
+}
+.search
+{
+	margin: auto;
+	font-weight: bold;
+	font-size: 1em;
+	font-family: NanumSquare, Arial, Dotum, '돋움', Helvetica;
+	padding: 4px;
+}
+
+#search_name_city
+{
+	width: 200px;
+}
+.result
+{
+	padding-top: 5px;
+	margin: auto;
+}
+.result_map_image
+{
+	margin: auto;
+	max-height: 400px;
+	max-width: 600px;
+}
+table
+{
+	font-size: 0.8em;
+}
+td
+{
+	border-bottom: solid black 1px;
+	border-left: 0px;
+	border-right: 0px;
+}
+tr#row_head
+{
+#	font-weight: bold;
+}
+td.col_name
+{
+#	font_weight: bold;
+}

@@ -1,0 +1,276 @@
+---
+title: "Two Factor analysis"
+output:
+  html_notebook: default
+  html_document: default
+---
+# Two Factor analysis
+```{r setup}
+# Load Test Dataset
+sample_pertax <- data.frame("하늘시" = c(4, 6, 5, 4, 1, 2),
+                            "구름시" = c(8, 5, 4, 6, 9, 10), 
+                            "바다시" = c(11, 13, 15, 12, 10, 14), 
+                            "대지도" = c(20, 21, 17, 19, 18, 22),
+                            row.names = 2008:2013)
+sample_subsidy <- data.frame("하늘시" = c(8, 5, 4, 6, 9, 10),
+                            "구름시" =  c(2, 6, 5, 4, 1, 5),
+                            "바다시" = c(11, 13, 15, 11, 14, 14), 
+                            "대지도" = c(20, 21, 17, 19, 18, 22),
+                            row.names = 2008:2013)
+sample_soc <- data.frame("하늘시" = c(4, 6, 5, 4, 1, 2),
+                            "구름시" = c(8, 5, 4, 6, 9, 10), 
+                            "바다시" = c(20, 21, 17, 19, 18, 22), 
+                            "대지도" = c(11, 7, 15, 8, 10, 14),
+                            row.names = 2008:2013)
+
+# support function
+```
+## function of get corrected sum<SSE>
+다음은 corrected sum을 구하고, 이를 이용해 SSE를 구하는 함수이다.
+이 함수는 각각의 열성분에 대한 표본편차를 구한 뒤, 이를 행성분의 수 - 1로 곱한다.
+```{r}
+cor_sum_square <- function(x) {
+  ret <- apply(x, 2, var) * (nrow(x) -1)
+  return(ret)
+}
+
+cal_SSE <- function(...) {
+  args <- list(...)
+  ret <- sum(sapply(args, cor_sum_square))
+  return(ret)
+}
+cor_sum_square(sample_pertax)
+
+# 이후 SSE를 구하기 위해 각각의 c_sum 요소를 모두 더한다.
+cal_SSE(sample_pertax, sample_soc, sample_subsidy)
+```
+
+## function of row/col sum
+다음은 df의 행성분과 열성분에 대한 합을 행/열 끝에 추가시켜준다.
+
+```{r function of calculate row/col sum}
+append_sum <- function (x){
+  coladd <- rbind(x, colSums(x))
+  rownames(coladd) <- append(rownames(x), "Sum")
+  # print(coladd)
+  rowadd <- cbind(coladd, rowSums(coladd))
+  colnames(rowadd) <- append(colnames(x), "Sum")
+  # print(rowadd)
+
+ return(rowadd)
+}
+
+#coladd = rbind(sample_pertax, colSums(sample_pertax))
+
+print(append_sum(sample_pertax))
+print(append_sum(sample_soc))
+print(append_sum(sample_subsidy))
+```
+
+22	42	75	117	256
+22	42	117	65	246
+42	23	78	117	260
+
+## function of acquire T_Total 
+진행하기 전에 R에서의 가변 길인 인자를 처리하는 방법을 알아보도록 한다.
+```{r}
+test_manyargs <- function(...) {
+  print(...)
+  args <- list(...)
+  for(arg in args) print(str(arg))
+}
+# test_manyargs(sample_pertax, sample_soc, sample_subsidy)
+```
+t_total은 각각의 dataset에서 행성분합/열성분합을 더하고, 다시 이들을 이용해 행성분합/열성분합을 구하는 함수이다.
+```{r function of calculate t_total}
+t_total <- function(...) {
+  args <- list(...)
+  ret <- data.frame(col.names = colnames(args[1]))
+  for (df in args) {
+      ret <- rbind(ret, colSums(df))
+  }
+  ret <- rbind(ret, colSums(ret))
+  ret <- cbind(ret, rowSums(ret))
+  
+  rownames(ret) <- append(seq(1, length(args)), "Sum")
+  colnames(ret) <- append(colnames(args[[1]]), "Sum")
+  # print(args)
+  return(ret)
+}
+
+print(t_total(sample_pertax, sample_soc, sample_subsidy))
+```
+## SSA
+다음은 계산된 t_total을 이용해 SSA를 구하는 함수이다.
+
+```{r function of calculate SSA}
+cal_SSA <- function(...) {
+  tt <- t_total(...) # (narg + 1) by (dcol + 1)
+  args <- list(...)
+
+  # b <- nargs : count of datasets
+  nargs <- nargs()
+  
+  # a <- column of dataset
+  dcol <- ncol(args[[1]])
+  
+  # n <- row of dataset
+  drow <- nrow(args[[1]])
+  # print(dcol)
+  # print(drow)
+  
+  # SSB : var. of t_total of col / an
+  # print(tt[1:nargs,"Sum"])
+  ret <- sum(sapply(tt[1:nargs, "Sum"],
+                    function(x) {(x - (tt["Sum","Sum"] / nargs))^2}
+                    )) / (dcol * drow)
+  
+  return(ret)
+  }
+cal_SSA(sample_pertax, sample_soc, sample_subsidy)
+```
+## SSB
+다음은 계산된 t_total을 이용해 SSB를 구하는 함수이다.
+```{r function of calculate SSB}
+cal_SSB <- function(...) {
+  tt <- t_total(...)
+  args <- list(...)
+
+  # b <- nargs : count of datasets
+  nargs <- nargs()
+  
+  # a <- column of dataset
+  dcol <- ncol(args[[1]])
+  
+  # n <- row of dataset
+  drow <- nrow(args[[1]])
+  # print(dcol)
+  # print(drow)
+  
+  # SSB : var. of t_total of col / an
+  # print(tt["Sum", 1:dcol])
+  ret <- sum(sapply(tt["Sum", 1:dcol],
+                    function(x) {(x - (tt["Sum","Sum"] / dcol))^2}
+                    )) / (nargs * drow)
+  
+  return(ret)
+  }
+cal_SSB(sample_pertax, sample_soc, sample_subsidy)
+# print(cal_SSB(sample_pertax, sample_soc, sample_subsidy))
+```
+## SST
+다음은 계산된 t_total을 이용해 SST를 구하는 함수이다.
+```{r function of calculate SST}
+cal_SST <- function(...) {
+  tt <- t_total(...)
+  args <- list(...)
+  binded_args <- rbind(...)
+  # print(binded_args)
+
+  # b <- nargs : count of datasets
+  nargs <- nargs()
+
+  # a <- column of dataset
+  dcol <- ncol(args[[1]])
+
+  # n <- row of dataset
+  drow <- nrow(args[[1]])
+  # print(dcol)
+  # print(drow)
+
+  # SSB : var. of t_total of col / an
+  # print(tt["Sum", 1:dcol])
+  total_avg <- tt["Sum", "Sum"] / (nargs * dcol * drow)
+  # print(total_avg)
+
+  ret <- sum(sapply(binded_args,
+                    function(x) {(x - total_avg)^2}
+                    ))
+
+  return(ret)
+  }
+cal_SST(sample_pertax, sample_soc, sample_subsidy)
+# print(cal_SST(sample_pertax, sample_soc, sample_subsidy))
+```
+## SSAB
+SSAB는 SST - SSA - SSB - SSE 이다.
+```{r function of calculate SSAB}
+cal_SSAB <- function(...) {
+  
+  return(cal_SST(...) - cal_SSA(...) - cal_SSB(...) - cal_SSE(...))
+}
+cal_SSAB(sample_pertax, sample_soc, sample_subsidy)
+# print(cal_SST(sample_pertax, sample_soc, sample_subsidy))
+```
+## TFA에 대한 전체 분석 결과를 만드는 함수
+```{r}
+get_result_TFA <- function(...){
+  args = list(...)
+  a = cal_SSA(...)
+  b = cal_SSB(...)
+  ab = cal_SSAB(...)
+  e = cal_SSE(...)
+  t = cal_SST(...)
+  
+  # b <- nargs : count of datasets
+  nargs <- nargs()
+
+  # a <- column of dataset
+  dcol <- ncol(args[[1]])
+
+  # n <- row of dataset
+  drow <- nrow(args[[1]])
+
+  ret = data.frame(value = c(a, b, ab, e, t),
+                   df = c(dcol - 1, nargs - 1, (dcol - 1) * (nargs - 1), dcol *  nargs * (drow - 1), dcol *  nargs * drow - 1),
+                   row.names = c("A", "B", "AB", "Error", "Total"))
+
+  ms <- ret["value"] / ret["df"]
+  colnames(ms) <- "MS"
+  # print(ms)
+  
+  f1 <- ms / ms[4,]
+  colnames(f1) <- "f1"
+  # print(f1)
+  f1[4:5,] = c(NA, NA)
+  # print(f1)
+  ret <- cbind(ret, ms, f1)
+ 
+# ret$f1 <- (ret["MS"] / ret["ERR", "MS"])[1:2]
+  
+  return(ret)
+}
+get_result_TFA(sample_pertax, sample_soc, sample_subsidy)
+```
+## Run
+```{r}
+setwd("d:/documents/Google Drive Sync/[Bigdata]/Project/CSV" )
+
+prep_df <- function(df) {
+  return(data.frame(df[, 2:32], row.names = df[,1]))
+}
+# y value
+df_y <- prep_df(read.csv("도시재생 - 세출예산-y.CSV"))
+# df_y <- data.frame(df_y[, 2:32], row.names = df_y[,1])
+# df_y <- prep_df(df_y)
+
+# 재정요인
+# df_pertax <- read.csv("도시재생 - 1인당지방세.CSV")
+# df_pertax <- data.frame(df_pertax[, 2:32], row.names = df_pertax[,1])
+df_pertax <- prep_df(read.csv("도시재생 - 1인당지방세.CSV"))
+df_subsidy <- prep_df(read.csv("도시재생 - 보조금비.CSV"))
+df_soc <- prep_df(read.csv("도시재생 - 사회복지비용비.CSV"))
+
+# 사회·경제적 요인
+df_peoparea <- prep_df(read.csv("도시재생 - 인구밀도.CSV"))
+
+# 도시쇠퇴지표
+df_highee <- prep_df(read.csv("도시재생 - 고차산업 종사자비CSV.CSV"))
+df_oldbuild <- prep_df(read.csv("도시재생 - 노후건물비.CSV")[1:8,])
+df_empl <- prep_df(read.csv("도시재생 - 총 종사자비.CSV"))
+df_peopp <- prep_df(read.csv("도시재생 - 인구비.CSV"))
+
+print(get_result_TFA(df_pertax, df_subsidy, df_soc))
+print(get_result_TFA(df_peoparea))
+print(get_result_TFA(df_highee, df_oldbuild, df_empl, df_peopp))
+```

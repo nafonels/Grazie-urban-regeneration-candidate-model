@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r setup}
+setwd("d:/documents/Google Drive Sync/[Bigdata]/Project/CSV" )
+df_pertax <- read.csv("도시재생 - 1인당지방세.CSV")
+df_highee <- read.csv("도시재생 - 고차산업 종사자비CSV.CSV")
+df_oldbuild <- read.csv("도시재생 - 노후건물비.CSV")
+df_subsidy <- read.csv("도시재생 - 보조금비.CSV")
+df_soc <- read.csv("도시재생 - 사회복지비용비.CSV")
+df_y <- read.csv("도시재생 - 세출예산-y.CSV")
+df_peoparea <- read.csv("도시재생 - 인구밀도.CSV")
+df_empl <- read.csv("도시재생 - 총 종사자비.CSV")
+df_peopp <- read.csv("도시재생 - 인구비.CSV")
+
+```
+```{r}
+df_data <- data.frame(y_val=log(colMeans(df_y[10,-1])),
+                      pertax=log(colMeans(df_pertax[,-1])),
+                      highee=log(colMeans(df_highee[,-1])),
+                      oldbuild=log(colMeans(df_oldbuild[9,-1])),
+                      subsidy=log(colMeans(df_subsidy[1:10,-1])),
+                      soc=log(colMeans(df_soc[,-1])),
+                      peoparea=log(colMeans(df_peoparea[,-1])),
+                      empl=log(colMeans(df_empl[,-1])),
+                      peopp=log(colMeans(df_peopp[,-1]))
+                      )
+rownames(df_data) <- colnames(df_y[,-1])
+plot(df_data)
+```
+

@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+
+  <link rel="stylesheet" type="text/css" href="result_page.css">
+
+  <script src="result_page.js"></script>
+  <title>Model Demonstration</title>
+ </head>
+ <body>
+ <div class="area_search"><!-- 입력폼 영역 -->
+<form action="/get_result.py" method="get" class="search_form">
+  <input class="search" id="search_name_city" type="text" name="name_city" placeholder="분석할 도시 이름을 입력">
+  <input class="search" type="submit" name="get_result" value="분석!">
+  </form>
+   </div>
+   <div class="result"><!-- 결과영역 -->
+   <div class="result_summary"><!-- 결과 Summary -->
+   <p>추천 후보지</p>
+   <p>안양, 하남, ...</p>
+   </div>
+   <div class="result_map"><!-- 지도 표시 영역 -->
+   <img class="result_map_image" src="result_map_example.png">
+   </div>
+   <div class="result_clustering"><!-- Clustering Result -->
+<table>
+ <tbody>
+ <tr id="row_head">
+  <td></td>
+  <td><p>Label1</p></td>
+  <td><p>Label2</p></td>
+  <td><p>Label3</p></td>
+  <td><p>Label4</p></td>
+  <td><p>Label5</p></td>
+  <td><p>Label6</p></td>
+  <td><p>Label7</p></td>
+  <td><p>Label8</p></td>
+  <td><p>Label9</p></td>
+  <td><p>전체대비<br>차지비율</p></td>
+  <td><p>국토교통부<br>선정여부</p></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>성남시</p></td>
+  <td><p>11</p></td>
+  <td><p>1</p></td>
+  <td><p>9</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>16</p></td>
+  <td><p>3</p></td>
+  <td><p>4</p></td>
+  <td><p>2</p></td>
+  <td><p>33.33%</p></td>
+  <td><p>O</p></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>광명시</p></td>
+  <td><p>7</p></td>
+  <td></td>
+  <td><p>2</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>5</p></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td><p>1</p></td>
+  <td><p>27.78%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>군포시</p></td>
+  <td><p>5</p></td>
+  <td></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td></td>
+  <td><p>3</p></td>
+  <td></td>
+  <td><p>2</p></td>
+  <td></td>
+  <td><p>27.27%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>안양시</p></td>
+  <td><p>10</p></td>
+  <td><p>1</p></td>
+  <td><p>8</p></td>
+  <td><p>1</p></td>
+  <td><p>3</p></td>
+  <td><p>8</p></td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td><p>25.81%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>의정부시</p></td>
+  <td><p>4</p></td>
+  <td></td>
+  <td><p>6</p></td>
+  <td></td>
+  <td></td>
+  <td><p>3</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td><p>20.00%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>수원시</p></td>
+  <td><p>13</p></td>
+  <td><p>1</p></td>
+  <td><p>7</p></td>
+  <td></td>
+  <td><p>2</p></td>
+  <td><p>6</p></td>
+  <td><p>2</p></td>
+  <td><p>8</p></td>
+  <td><p>1</p></td>
+  <td><p>15.00%</p></td>
+  <td><p>O</p></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>동두천시</p></td>
+  <td><p>2</p></td>
+  <td></td>
+  <td><p>1</p></td>
+  <td><p>2</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td><p>12.50%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>부천시</p></td>
+  <td><p>15</p></td>
+  <td></td>
+  <td><p>7</p></td>
+  <td><p>4</p></td>
+  <td><p>2</p></td>
+  <td><p>4</p></td>
+  <td></td>
+  <td><p>4</p></td>
+  <td></td>
+  <td><p>11.11%</p></td>
+  <td><p>O</p></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>하남시</p></td>
+  <td><p>2</p></td>
+  <td><p>1</p></td>
+  <td><p>2</p></td>
+  <td></td>
+  <td></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>3</p></td>
+  <td><p>2</p></td>
+  <td><p>8.33%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>고양시</p></td>
+  <td><p>2</p></td>
+  <td><p>3</p></td>
+  <td><p>7</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>3</p></td>
+  <td><p>4</p></td>
+  <td><p>13</p></td>
+  <td><p>5</p></td>
+  <td><p>7.69%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>평택시</p></td>
+  <td><p>2</p></td>
+  <td></td>
+  <td><p>3</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>3</p></td>
+  <td><p>8</p></td>
+  <td><p>3</p></td>
+  <td><p>4.55%</p></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td class="col_name">
+  <p>안산시</p></td>
+  <td><p>1</p></td>
+  <td></td>
+  <td><p>7</p></td>
+  <td><p>4</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>1</p></td>
+  <td><p>8</p></td>
+  <td><p>2</p></td>
+  <td><p>4.00%</p></td>
+  <td></td>
+ </tr>
+</tbody>
+</table>
+   </div>
+   <div class="result_detail"><!-- 상세 후보지역 -->
+   상세 후보지역
+   </div>
+   </div>
+ </body>
+</html>
